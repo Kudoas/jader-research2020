@@ -3,9 +3,9 @@ import numpy as np
 import codecs
 import os
 
-os.chdir("./data/jader")
+os.chdir("./data")
 
-with codecs.open('drug202008.csv', "r", "Shift-JIS", "ignore") as file:
+with codecs.open('jader/drug202008.csv', "r", "Shift-JIS", "ignore") as file:
     jdrug = pd.read_table(file, delimiter=",")
 
 # 重複削除
@@ -63,8 +63,9 @@ is_tnf = (
     (sus_drug['Certolizumab'] == 1)
 )
 
-sus_drug[is_tnf].to_csv('check_tnf_drug.csv',
-                        encoding='shift-jis', index=False)
+sus_drug[is_tnf].to_csv(
+    'target/check_tnf_drug.csv', encoding='shift-jis', index=False
+)
 sus_drug = sus_drug[
     ['識別番号', "医薬品（一般名）", 'Infliximab', 'Etanercept',
         'Golimumab', 'Adalimumab', 'Certolizumab']
@@ -72,7 +73,7 @@ sus_drug = sus_drug[
 sus_drug["is_tnf"] = is_tnf
 sus_drug = sus_drug.drop_duplicates()
 
-with codecs.open('demo202008.csv', "r", "Shift-JIS", "ignore") as file:
+with codecs.open('jader/demo202008.csv', "r", "Shift-JIS", "ignore") as file:
     demo = pd.read_table(file, delimiter=",")
 # 重複削除
 demo.drop_duplicates(inplace=True)
@@ -80,16 +81,18 @@ demo1 = demo[['識別番号', '性別', '年齢', '報告年度・四半期']]
 outer_drug_demo = pd.merge(demo1, sus_drug, on="識別番号", how='outer')
 
 # 欠損値の0埋め
-outer_drug_demo[['Infliximab', 'Etanercept', 'Adalimumab',
-                 'Golimumab', 'Certolizumab', 'is_tnf']].fillna(0)
+outer_drug_demo[
+    ['Infliximab', 'Etanercept', 'Adalimumab',
+        'Golimumab', 'Certolizumab', 'is_tnf']
+].fillna(0)
 # concat 横結合：レコード数が同じことに注意
 outer_drug_demo = pd.concat([outer_drug_demo[['識別番号', '性別', '年齢', '報告年度・四半期', "医薬品（一般名）"]], outer_drug_demo[[
                             'Infliximab', 'Etanercept', 'Adalimumab', 'Golimumab', 'Certolizumab', 'is_tnf']].fillna(0)], axis=1)
 
-with codecs.open('reac202008.csv', "r", "Shift-JIS", "ignore") as file:
+with codecs.open('jader/reac202008.csv', "r", "Shift-JIS", "ignore") as file:
     reac = pd.read_table(file, delimiter=",")
 # 重複削除
-reac1 = reac[['識別番号', '有害事象']].drop_duplicates()
+reac1 = reac[['識別番号', '有害事象', '有害事象連番', '有害事象の発現日']]
 jader = pd.merge(reac1, outer_drug_demo, on='識別番号')
 
-jader.to_csv('jader.csv', encoding='shift-jis', index=False)
+jader.to_csv('target/jader.csv', encoding='shift-jis', index=False)
