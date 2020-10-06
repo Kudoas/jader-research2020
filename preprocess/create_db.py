@@ -71,7 +71,7 @@ sus_drug = sus_drug[
         'Golimumab', 'Adalimumab', 'Certolizumab']
 ]
 sus_drug["is_tnf"] = is_tnf
-sus_drug = sus_drug.drop_duplicates()
+sus_drug = sus_drug.drop_duplicates().replace(False, 0).replace(True, 1)
 
 with codecs.open('jader/demo202008.csv', "r", "Shift-JIS", "ignore") as file:
     demo = pd.read_table(file, delimiter=",")
