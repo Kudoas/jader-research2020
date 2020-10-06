@@ -53,9 +53,9 @@
 
 ## 参考
 
-## JADERについて
+### JADERについて
 
-### JADER（Japanese Adverse Drug Event Report database）とは
+#### JADER（Japanese Adverse Drug Event Report database）とは
 
 独立行政法人医薬品医療機器総合機構（PMDA）が提供している「副作用が疑われる症例報告に関する情報『医薬品副作用データベース』」のこと。以下の4つのテーブルからなる。
 
@@ -63,7 +63,7 @@
 
 > [くすりの有害事象と薬剤疫学](https://czeek.com/) DB構造について　JADER版
 
-## 集計方法について
+### 集計方法について
 
 下記分割表をイメージしてそれぞれのセルの値を求めてから計算する。
 
@@ -83,9 +83,9 @@
 
 詳細は[カウント方法について（オーダー機能）](https://czeek.com/jissen/howtocount/)を参照
 
-## JADERの問題点
+### JADERの問題点
 
-### 一行に重複して入力されているデータが存在する
+#### 一行に重複して入力されているデータが存在する
 
 例.　TNF-α阻害薬の使用理由
 
@@ -104,14 +104,14 @@
 
 https://docs.google.com/spreadsheets/d/1j0SfnBoGhGi7feDviVHf0lL0l-pdFTRUjpKO4Hl71MA/edit?usp=sharing
 
-### 有害事象名や医薬品一般名の用語が統一されていない
+#### 有害事象名や医薬品一般名の用語が統一されていない
 
 1つの薬剤を示している医薬品一般名は英語半角表記、英語全角表記、カタカナなど複数あり、統一して集計することが難しい。医薬品一般名と化合物名を対応させるマスターデータの作成は、種類が9000以上あるため現実的ではない。
 
 TNF-a阻害薬該当の5剤は該当の薬剤を目視で確認し、対応させた。
 https://docs.google.com/spreadsheets/d/1h7n75bqZWZrkftSKiSXEdUoBy9ohI6knKMON91US-1c/edit?usp=sharing
 
-### 日付のフォーマットが統一されていない
+#### 日付のフォーマットが統一されていない
 
 以下はその一例
 
