@@ -23,14 +23,14 @@ $ docker-compose up -d
 ```
 |- data/
 	|- jader/　　　　　　　　　- JADERの元データフォルダ
-	|- target/							- 解析後のデータフォルダ
+	|- target/		- 解析後のデータフォルダ
 |- docker/
 	|- Dockerfile
-	|- requirements.txt     - 必要なライブラリが記述してある
+	|- requirements.txt     - 必要なライブラリ
 |- docs/
 |- notebooks/
 |- preprecess/
-	|- create_db.py   			- jaderデータから解析用のデータを作成するモジュール
+	|- create_db.py  	- jaderデータから解析用のデータを作成するモジュール
 	|- ror.py　　　　　　　　　- 薬物と有害事象ごとにRORを計算するモジュール
 ```
 
