@@ -54,6 +54,8 @@ TNF-α阻害薬に分類される5剤（インフリキシマブ、エタネル�
 
 ## 実行
 
+dockerを使用してローカルで実行している場合は以下のコマンドを実行できます。
+
 解析用のデータベース`target/data.csv`が作成されます。 またTNF-α阻害薬を服用していた場合の副作用の集計結果`target/count_side_effect.csv`とTNF-α阻害薬に分類される5剤（インフリキシマブ、エタネルセプト、アダリズマブ、ゴリズマブ、セルトリズマブ ぺゴル）の報告年度別の頻度`target/count_years.csv`も作成されます。
 
 ```bash
@@ -64,6 +66,12 @@ $ docker exec -it jader-inf-2020 python3 preprocess/create_db.py
 
 ```bash
 $ docker exec -it jader-inf-2020 python3 preprocess/ror.py
+```
+
+`data.csv`を利用し、TNF-α阻害薬の年度別使用頻度`target/drug_info.csv`と、服用している患者の年齢`target/age.csv`と性別`target/sex.csv`を集計されます。
+
+```bash
+$ docker exec -it jader-inf-2020 python3 preprocess/patient_background.py
 ```
 
 ## 手順

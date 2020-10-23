@@ -7,13 +7,14 @@ import config
 
 jader = pd.read_csv('target/data.csv', encoding='shift-jis')
 
-# 書き込み用CSVファイルの作成
+# 書き込み用CSVファイルの作成する
 with open('target/ror.csv', 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(['drug', 'side_effect', 'a', 'b',
                      'c', 'd', 'ror', '95%CI+', '95%CI-'])
 
 
+# 有害事象と薬ごとにRORを算出し、CSVファイルに書き込む
 def ror(df, side_effect, drug):
     total = df['識別番号'].nunique()
     try:
@@ -46,6 +47,7 @@ drug_list = [
 ]
 
 
+# 各薬のトップ30の有害事象を出力する
 def get_se_list(drug):
     return list(
         jader[jader.is_tnf == 1].groupby('有害事象').sum().sort_values(
@@ -54,7 +56,7 @@ def get_se_list(drug):
     )
 
 
-# ループで回して全パターンを実行する
+# 有害事象と薬の全パターンを実行する
 for d in drug_list:
     for s in get_se_list(d):
         ror(jader, s, d)

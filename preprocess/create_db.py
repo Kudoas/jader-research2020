@@ -15,10 +15,14 @@ with codecs.open('jader/reac202008.csv', "r", "Shift-JIS", "ignore") as file:
     reac = pd.read_table(file, delimiter=",")
 
 
+# drugデータの加工：
+# 被疑薬の選択
+# TNF-α阻害薬に分類される5剤（インフリキシマブ、エタネルセプト、アダリズマブ、ゴリズマブ、セルトリズマブ ぺゴル）を選択
+# 1人1レコードへ変換
 def create_drug_df():
     sus_drug = drug[drug["医薬品の関与"] == "被疑薬"]
-    sus_drug = sus_drug[['識別番号', '医薬品連番', '医薬品（一般名）', '使用理由']]
 
+    sus_drug = sus_drug[['識別番号', '医薬品連番', '医薬品（一般名）', '使用理由']]
     is_infliximab = (
         (sus_drug["医薬品（一般名）"] == "インフリキシマブ（遺伝子組換え）") |
         (sus_drug["医薬品（一般名）"] == "インフリキシマブ（遺伝子組換え）［後続１］") |
@@ -75,11 +79,14 @@ def create_drug_df():
 
     # 重複削除: Infliximab,Etanercept, Golimumab, Adalimumab,
     sus_drug = sus_drug.drop_duplicates().replace(False, 0).replace(True, 1)
+
+    # tnfα阻害薬を飲んだ患者データを1人1レコードにして保存
     sus_drug[sus_drug["is_tnf"] == 1].groupby("識別番号").max().to_csv(
         'target/tnf_druger.csv', encoding='shift-jis'
     )
 
 
+# 上記の加工済drugとdemo、reacの結合
 def join_df():
     drug = pd.read_csv('target/tnf_druger.csv', encoding='shift-jis')
 
@@ -103,10 +110,14 @@ def join_df():
         reac[['識別番号', '有害事象']].drop_duplicates(inplace=True),
         outer_drug_demo, on='識別番号', how='outer'
     )
-
     # *------------------*
     # ベースデータの保存
     jader.to_csv('target/data.csv', encoding='shift-jis')
+
+
+# 残りの解析用データの保存
+def store_data():
+    jader = pd.read_csv('target/data.csv', encoding='shift-jis')
 
     # 年度ごとの集計データの保存
     jader[jader.is_tnf == 1].groupby('報告年度・四半期').sum().to_csv(
@@ -118,4 +129,4 @@ def join_df():
 
 
 create_drug_df()
-join_df()
+store_data()

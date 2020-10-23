@@ -10,6 +10,7 @@ patient_sex_path = 'target/sex.csv'
 patient_age_path = 'target/age.csv'
 
 
+# 年度別の各tnfα阻害薬の使用状況を集計する
 def drug_info():
     pre_table1 = jader[['識別番号', '報告年度・四半期', 'Infliximab', 'Etanercept',
                         'Adalimumab', 'Golimumab', 'Certolizumab', 'is_tnf']]
@@ -22,6 +23,7 @@ def drug_info():
     table1.to_csv(drug_info_path, encoding="shift-jis")
 
 
+# tnfα阻害薬を服用している患者の性別と年齢を集計する
 def describe_age_and_sex():
     jader_is_tnf = jader[jader['is_tnf'] == 1]
     jader_is_tnf = jader_is_tnf[['識別番号', '性別', '年齢', 'is_tnf']]
