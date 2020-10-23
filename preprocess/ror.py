@@ -3,7 +3,7 @@ import math
 import os
 import pandas as pd
 
-os.chdir("../data")
+import config
 
 jader = pd.read_csv('target/data.csv', encoding='shift-jis')
 
@@ -47,11 +47,14 @@ drug_list = [
 
 
 def get_se_list(drug):
-    return list(jader[jader.is_tnf == 1].groupby('有害事象').sum().sort_values(drug, ascending=False)[drug].index[:30])
+    return list(
+        jader[jader.is_tnf == 1].groupby('有害事象').sum().sort_values(
+            drug, ascending=False
+        )[drug].index[:30]
+    )
 
 
 # ループで回して全パターンを実行する
 for d in drug_list:
-    print('***********************', d, '***********************')
     for s in get_se_list(d):
         ror(jader, s, d)

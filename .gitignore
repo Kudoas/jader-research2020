@@ -1,6 +1,6 @@
 .ipynb_checkpoints
+__pycache__
 venv
-.ipynb_checkpoints
 data/jader/*.csv
 data/target/*.csv
 
@@ -8,3 +8,6 @@ data/target/*.csv
 !data/target/count_years.csv
 !data/target/count_side_effect.csv
 !data/target/ror.csv
+!data/target/drug_info.csv
+!data/target/sex.csv
+!data/target/age.csv
