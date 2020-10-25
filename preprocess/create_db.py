@@ -98,7 +98,7 @@ class CreateDB:
         # 重複削除
         self.demo.drop_duplicates(inplace=True)
         outer_drug_demo = pd.merge(
-            demo[['識別番号', '性別', '年齢', '報告年度・四半期']], drug, on="識別番号", how='outer'
+            self.demo[['識別番号', '性別', '年齢', '報告年度・四半期']], drug, on="識別番号", how='outer'
         )
 
         # 欠損値の0埋め
