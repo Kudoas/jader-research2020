@@ -2,6 +2,11 @@
 # docs/データを読み込む方法.mdでのGoogle Driveでのデータ管理方法を参考し、
 # 以下のコードをcolaboratoryで実行すると解析用のデータベースが作成されます。
 
+# 例
+# 1. google driveのrootディレクトリ/data/jaderにJADERからダウンロードしたデータをアップロードする
+# 2. 結果を出力するためにgoogle driveのrootディレクトリ/data以下に”target”という名前のフォルダを作成する
+# 3. アップロードしたデータに合わせて、読み込むファイル名を変更する
+
 import codecs
 from google.colab import drive
 import numpy as np
@@ -137,6 +142,7 @@ class CreateDB:
             'is_tnf'].to_csv('target/count_side_effect.csv', encoding='shift-jis')
 
 
+# 読み込むファイル名はJADERからダウンロードしたデータ名に合わせてください！
 with codecs.open('jader/drug202008.csv', "r", "Shift-JIS", "ignore") as file:
     drug = pd.read_table(file, delimiter=",")
 
@@ -156,5 +162,4 @@ def main():
     c.get_se()
 
 
-if __name__ == "__main__":
-    main()
+main()
