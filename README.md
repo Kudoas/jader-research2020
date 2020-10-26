@@ -34,7 +34,7 @@ $ docker-compose up -d
 	|- Dockerfile
 	|- requirements.txt     - 必要なライブラリ
 |- docs/
-|- examples/					- colab用のサンプルコード
+|- examples/		- colab用のサンプルコード
 |- notebooks/
 |- preprecess/
 	|- create_db.py  	- jaderデータから解析用のデータを作成するモジュール
@@ -77,8 +77,7 @@ $ docker exec -it jader-inf-2020 python3 preprocess/patient_background.py
 
 ## 手順
 
-処理のチャート図です。
-https://drive.google.com/file/d/1RGTW2zzOCfx7wEXK7ai4j6r4eQQeH9Wr/view?usp=sharing
+[JADER Chart](https://drive.google.com/file/d/1RGTW2zzOCfx7wEXK7ai4j6r4eQQeH9Wr/view?usp=sharing)もしくは`docs/JADER_Chart.pdf`をご確認ください。
 
 ## 参考
 
