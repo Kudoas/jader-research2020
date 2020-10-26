@@ -77,7 +77,8 @@ $ docker exec -it jader-inf-2020 python3 preprocess/patient_background.py
 
 ## 手順
 
-docsに入れる予定
+処理のチャート図です。
+https://drive.google.com/file/d/1RGTW2zzOCfx7wEXK7ai4j6r4eQQeH9Wr/view?usp=sharing
 
 ## 参考
 
