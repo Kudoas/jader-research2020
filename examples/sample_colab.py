@@ -1,15 +1,25 @@
+# colaboratoryで実行する場合のサンプルコード
+# docs/データを読み込む方法.mdでのGoogle Driveでのデータ管理方法を参考し、
+# 以下のコードをcolaboratoryで実行すると解析用のデータベースが作成されます。
+
 import codecs
+from google.colab import drive
 import numpy as np
 import os
 import pandas as pd
 
-import config
+
+drive.mount("/content/drive")
+os.chdir('drive/My Drive/data')
 
 
 # 解析用のデータベースの作成
 class CreateDB:
     def __init__(self, drug: 'dataframe', demo: 'dataframe', reac: 'dataframe'):
-        """JADERのオリジナルデータ"""
+        """JADERのオリジナルデータ
+
+        dataframeの形で出力してください
+        """
         self.drug = drug
         self.demo = demo
         self.reac = reac

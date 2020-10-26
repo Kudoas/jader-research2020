@@ -17,7 +17,7 @@ class Background:
         self.patient_sex_path = patient_sex_path
         self.patient_age_path = patient_age_path
 
-    def get_drug_info(self):
+    def get_drug_freq(self):
         """年度別の各tnfα阻害薬の使用状況の集計"""
         pre_table1 = self.jader[
             ['識別番号', '報告年度・四半期', 'Infliximab', 'Etanercept',
@@ -55,7 +55,7 @@ class Background:
 
 def main():
     b = Background()
-    b.get_drug_info()
+    b.get_drug_freq()
     b.describe_age_and_sex()
 
 

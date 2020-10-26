@@ -40,7 +40,7 @@ class ROR:
             print('バグった', side_effect, drug)
 
     def get_se_list(self, drug, num=30):
-        """各薬の上位30の有害事象の出力"""
+        """各薬の上位30の有害事象の抽出"""
         return list(
             self.jader[self.jader.is_tnf == 1].groupby('有害事象').sum().sort_values(
                 drug, ascending=False
