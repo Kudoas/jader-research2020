@@ -33,8 +33,8 @@ $ docker-compose up -d
 |- docker/
 	|- Dockerfile
 	|- requirements.txt     - 必要なライブラリ
-|- docs/
-|- examples/		- colab用のサンプルコード
+|- docs/			- ドキュメントフォルダ
+|- examples/			- colab用のサンプルコード
 |- notebooks/
 |- preprecess/
 	|- create_db.py  	- jaderデータから解析用のデータを作成するモジュール
