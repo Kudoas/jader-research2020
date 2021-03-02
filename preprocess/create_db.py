@@ -1,4 +1,5 @@
 import codecs
+import csv
 import numpy as np
 import os
 import pandas as pd
@@ -6,86 +7,87 @@ import pandas as pd
 import config
 
 
+def drop_columns(df: 'DataFrame', keys: list):
+    try:
+        return df.drop(keys, axis=1, inplace=False)
+    except KeyError:
+        print('DataFrameに指定したKeyはありません')
+
+
+def keep_columns(df: 'DataFrame', keys: list):
+    try:
+        return df[keys]
+    except KeyError:
+        print('DataFrameに指定したKeyはありません')
+
+
+def one_to_many_dict(ls: list) -> dict:
+    d = {}
+    for s in set(ls):
+        d[s] = []
+    return d
+
+
 # 解析用のデータベースの作成
+
+
 class CreateDB:
-    def __init__(self, drug: 'dataframe', demo: 'dataframe', reac: 'dataframe'):
+    def __init__(self, drug: 'DataFrame', demo: 'DataFrame', reac: 'DataFrame'):
         """JADERのオリジナルデータ"""
         self.drug = drug
         self.demo = demo
         self.reac = reac
 
-    def extract_suspicious(self):
+    def extract_suspicious(self) -> "DataFrame":
         """被疑薬のみの抽出"""
-        sus_drug = self.drug[
-            drug["医薬品の関与"] == "被疑薬"
-        ]['識別番号', '医薬品連番', '医薬品（一般名）', '使用理由']
-        return sus_drug
+        return self.drug[drug["医薬品の関与"] == "被疑薬"]
 
-    def check_tnfa(self, sus_drug):
-        """TNF-α阻害薬に分類される5剤（インフリキシマブ、エタネルセプト、アダリズマブ、ゴリズマブ、セルトリズマブ ぺゴル）の選択 
+    def get_tnfa_drug(self) -> dict:
+        with open('master/tnfa_drug202008.csv', newline='') as f:
+            rows = csv.reader(f)
+            drug_list = [
+                'infliximab', 'etanercept', 'adalimumab', 'golimumab', 'certolizumab'
+            ]
+            drug_dict = one_to_many_dict(drug_list)
+            for row in rows:
+                for drug in drug_list:
+                    if drug == row[0]:
+                        drug_dict[row[0]].append(row[1])
+        return drug_dict
+
+    def check_tnfa(self, df: "DataFrame", tnfa_dict: dict) -> "DataFrame":
+        """TNF-α阻害薬に分類される5剤（インフリキシマブ、エタネルセプト、アダリズマブ、ゴリズマブ、セルトリズマブ ぺゴル）の選択
 
         該当の5剤、TNF-α阻害薬の服用の有無に対しフラグをつける
         """
-        is_infliximab = (
-            (sus_drug["医薬品（一般名）"] == "インフリキシマブ（遺伝子組換え）") |
-            (sus_drug["医薬品（一般名）"] == "インフリキシマブ（遺伝子組換え）［後続１］") |
-            (sus_drug["医薬品（一般名）"] == "インフリキシマブ（遺伝子組換え）［後続３］") |
-            (sus_drug["医薬品（一般名）"] == "インフリキシマブ（遺伝子組換え）［後続２］") |
-            (sus_drug["医薬品（一般名）"] == "INFLIXIMAB") |
-            (sus_drug["医薬品（一般名）"] == "ＩＮＦＬＩＸＩＭＡＢ") |
-            (sus_drug["医薬品（一般名）"] == "インフリキシマブ（遺伝子組換え）［インフリキシマブ後続３］") |
-            (sus_drug["医薬品（一般名）"] == "INFLIXIMAB (NGX)")
-        )
-        is_etanercept = (
-            (sus_drug["医薬品（一般名）"] == "エタネルセプト（遺伝子組換え）") |
-            (sus_drug["医薬品（一般名）"] == "エタネルセプト（遺伝子組換え）［後続１］") |
-            (sus_drug["医薬品（一般名）"] == "ETANERCEPT (NGX)") |
-            (sus_drug["医薬品（一般名）"] == "エタネルセプト（遺伝子組換え）［後続２］") |
-            (sus_drug["医薬品（一般名）"] == "エタネルセプト") |
-            (sus_drug["医薬品（一般名）"] == "ETANERCEPT") |
-            (sus_drug["医薬品（一般名）"] == "etanercept")
-        )
-        is_adalimumab = (
-            (sus_drug["医薬品（一般名）"] == "ADALIMUMAB(GENETICAL RECOMBINATION)") |
-            (sus_drug["医薬品（一般名）"] == "Adalimumab") |
-            (sus_drug["医薬品（一般名）"] == "アダリムマブ（遺伝子組換え）") |
-            (sus_drug["医薬品（一般名）"] == "アダリムマブ") |
-            (sus_drug["医薬品（一般名）"] == "Humira")
-        )
-        is_golimumab = (
-            (sus_drug["医薬品（一般名）"] == "ゴリムマブ（遺伝子組換え）") |
-            (sus_drug["医薬品（一般名）"] == "ゴリムマブ")
-        )
-        is_certolizumab = (
-            (sus_drug["医薬品（一般名）"] == "セルトリズマブペゴル") |
-            (sus_drug["医薬品（一般名）"] == "セルトリズマブ　ペゴル（遺伝子組換え）") |
-            (sus_drug["医薬品（一般名）"] == "ＣＥＲＴＯＬＩＺＵＭＡＢ　ＰＥＧＯＬ")
-        )
-        sus_drug['Infliximab'] = is_infliximab
-        sus_drug['Etanercept'] = is_etanercept
-        sus_drug['Adalimumab'] = is_adalimumab
-        sus_drug['Golimumab'] = is_golimumab
-        sus_drug['Certolizumab'] = is_certolizumab
-        sus_drug = sus_drug.replace(False, 0).replace(True, 1)
+        is_infliximab = df["医薬品（一般名）"].isin(tnfa_dict['infliximab'])
+        is_etanercept = df["医薬品（一般名）"].isin(tnfa_dict['etanercept'])
+        is_adalimumab = df["医薬品（一般名）"].isin(tnfa_dict['adalimumab'])
+        is_golimumab = df["医薬品（一般名）"].isin(tnfa_dict['golimumab'])
+        is_certolizumab = df["医薬品（一般名）"].isin(tnfa_dict['certolizumab'])
+        df['Infliximab'] = is_infliximab
+        df['Etanercept'] = is_etanercept
+        df['Adalimumab'] = is_adalimumab
+        df['Golimumab'] = is_golimumab
+        df['Certolizumab'] = is_certolizumab
+        df = df.replace(False, 0).replace(True, 1)
         is_tnf = (
-            (sus_drug['Infliximab'] == 1) |
-            (sus_drug['Etanercept'] == 1) |
-            (sus_drug['Golimumab'] == 1) |
-            (sus_drug['Adalimumab'] == 1) |
-            (sus_drug['Certolizumab'] == 1)
+            (df['Infliximab'] == 1) |
+            (df['Etanercept'] == 1) |
+            (df['Golimumab'] == 1) |
+            (df['Adalimumab'] == 1) |
+            (df['Certolizumab'] == 1)
         )
-        sus_drug["is_tnf"] = is_tnf
-        sus_drug.drop(['医薬品連番', '医薬品（一般名）', '使用理由'], axis=1, inplace=True)
+        df["is_tnf"] = is_tnf
+        df = drop_columns(df, ['医薬品連番', '医薬品（一般名）', '使用理由'])
 
-        # 重複削除
-        sus_drug = sus_drug.drop_duplicates().replace(False, 0).replace(True, 1)
-        return sus_drug
+        # 重複削除し、FalseとTrueを0と1に置き換え
+        df = df.drop_duplicates().replace(False, 0).replace(True, 1)
+        return df
 
-    def groupby_tnfa(self, sus_drug):
+    def groupby_tnfa(self, sus_drug: 'DataFrame') -> 'DataFrame':
         """TNF-α阻害薬を服用した患者を1人1レコードへ変換"""
-        sus_drug[sus_drug["is_tnf"] == 1].groupby("識別番号").max().to_csv(
-            'target/tnf_druger.csv', encoding='shift-jis'
-        )
+        return sus_drug[sus_drug["is_tnf"] == 1].groupby("識別番号").max()
 
     def join_tnfa_and_demo_reac(self):
         """drug, demo, jaderの結合
@@ -102,15 +104,19 @@ class CreateDB:
 
         # 欠損値の0埋め
         outer_drug_demo[
-            ['Infliximab', 'Etanercept', 'Adalimumab',
-                'Golimumab', 'Certolizumab', 'is_tnf']
+            [
+                'Infliximab', 'Etanercept', 'Adalimumab', 'Golimumab', 'Certolizumab', 'is_tnf'
+            ]
         ].fillna(0)
         outer_drug_demo = pd.concat(
-            [outer_drug_demo[['識別番号', '性別', '年齢', '報告年度・四半期']],
-             outer_drug_demo[
-                ['Infliximab', 'Etanercept', 'Adalimumab',
-                    'Golimumab', 'Certolizumab', 'is_tnf']
-            ].fillna(0)], axis=1)
+            [
+                outer_drug_demo[['識別番号', '性別', '年齢', '報告年度・四半期']],
+                outer_drug_demo[
+                    ['Infliximab', 'Etanercept', 'Adalimumab',
+                     'Golimumab', 'Certolizumab', 'is_tnf']
+                ].fillna(0)
+            ], axis=1
+        )
 
         # 重複削除
         jader = pd.merge(
@@ -139,11 +145,18 @@ with codecs.open('jader/reac202008.csv', "r", "Shift-JIS", "ignore") as file:
 
 def main():
     c = CreateDB(drug, demo, reac)
-    sus_drug = c.extract_suspicious()
-    checked_drug = c.check_tnfa(sus_drug)
-    c.groupby_tnfa(checked_drug)
-    c.join_tnfa_and_demo_reac()
-    c.get_se()
+    sus_drug = keep_columns(
+        c.extract_suspicious(),
+        ['識別番号', '医薬品連番', '医薬品（一般名）', '使用理由']
+    )
+    tnfa_drug_dict = c.get_tnfa_drug()
+    checked_drug = c.check_tnfa(sus_drug, tnfa_drug_dict)
+    print(checked_drug.head())
+    # c.groupby_tnfa(checked_drug).to_csv(
+    #     'target/tnf_druger.csv', encoding='shift-jis'
+    # )
+    # c.join_tnfa_and_demo_reac()
+    # c.get_se()
 
 
 if __name__ == "__main__":
