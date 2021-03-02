@@ -123,14 +123,14 @@ class CreateDB:
             self.reac[['識別番号', '有害事象']].drop_duplicates(inplace=True),
             outer_drug_demo, on='識別番号', how='outer'
         )
-        # ベースデータの保存
-        jader.to_csv('target/data.csv', encoding='shift-jis')
+        return jader
 
     def get_se(self):
         """tnfαを飲んだ人の有害事象の集計データの保存"""
         jader = pd.read_csv('target/data.csv', encoding='shift-jis')
         jader[jader.is_tnf == 1].groupby('有害事象').sum().sort_values('is_tnf', ascending=False)[
-            'is_tnf'].to_csv('target/count_side_effect.csv', encoding='shift-jis')
+            'is_tnf']
+        return jader
 
 
 with codecs.open('jader/drug202008.csv', "r", "Shift-JIS", "ignore") as file:
@@ -151,12 +151,12 @@ def main():
     )
     tnfa_drug_dict = c.get_tnfa_drug()
     checked_drug = c.check_tnfa(sus_drug, tnfa_drug_dict)
-    print(checked_drug.head())
-    # c.groupby_tnfa(checked_drug).to_csv(
-    #     'target/tnf_druger.csv', encoding='shift-jis'
-    # )
-    # c.join_tnfa_and_demo_reac()
-    # c.get_se()
+    c.groupby_tnfa(checked_drug).to_csv(
+        'target/tnf_druger.csv', encoding='shift-jis'
+    )
+    jader = c.join_tnfa_and_demo_reac()
+    jader.to_csv('target/data.csv', encoding='shift-jis')
+    c.get_se().to_csv('target/count_side_effect.csv', encoding='shift-jis')
 
 
 if __name__ == "__main__":
