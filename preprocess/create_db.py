@@ -29,8 +29,6 @@ def one_to_many_dict(ls: list) -> dict:
 
 
 # 解析用のデータベースの作成
-
-
 class CreateDB:
     def __init__(self, drug: 'DataFrame', demo: 'DataFrame', reac: 'DataFrame'):
         """JADERのオリジナルデータ"""
