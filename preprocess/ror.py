@@ -62,7 +62,7 @@ def main():
     r = ROR()
     r.create_ror_file()
 
-    # 有害事象と薬の全パタ ーンを実行する
+    # 有害事象と薬の全パターンを実行する
     for d in drug_list:
         for s in r.get_se_list(d):
             r.ror(s, d)
