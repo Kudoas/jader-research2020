@@ -7,7 +7,7 @@ import config
 class Background:
     def __init__(
         self,
-        jader=pd.read_csv('target/data.csv', encoding='shift-jis'),
+        jader=pd.read_csv('target/data.csv', encoding='shift_jis'),
         drug_info_path='target/drug_info.csv',
         patient_sex_path='target/sex.csv',
         patient_age_path='target/age.csv'
@@ -32,7 +32,7 @@ class Background:
             ].fillna(0)], axis=1)
         grouped_table1 = pre_table1.groupby('報告年度・四半期')
         table1 = grouped_table1.sum()
-        table1.to_csv(self.drug_info_path, encoding="shift-jis")
+        table1.to_csv(self.drug_info_path, encoding="shift_jis")
 
     def describe_age_and_sex(self):
         """tnfα阻害薬を服用している患者の性別と年齢の集計"""
@@ -45,12 +45,12 @@ class Background:
         grouped_jader_sex = jader_is_tnf.groupby('性別')
         table2_sex = grouped_jader_sex.sum()
         table2_sex['per_total'] = table2_sex['is_tnf'] / count_is_tnf * 100
-        table2_sex.to_csv(self.patient_sex_path, encoding="shift-jis")
+        table2_sex.to_csv(self.patient_sex_path, encoding="shift_jis")
 
         grouped_jader_age = jader_is_tnf.groupby('年齢')
         table2_age = grouped_jader_age.sum()
         table2_age['per_total'] = table2_age['is_tnf'] / count_is_tnf * 100
-        table2_age.to_csv(self.patient_age_path, encoding="shift-jis")
+        table2_age.to_csv(self.patient_age_path, encoding="shift_jis")
 
 
 def main():
