@@ -92,7 +92,7 @@ class CreateDB:
 
         drug, demo, jaderを結合し、csvファイルとして保存する
         """
-        drug = pd.read_csv('target/tnf_druger.csv', encoding='shift-jis')
+        drug = pd.read_csv('target/tnf_druger.csv', encoding='shift_jis')
 
         # 重複削除
         self.demo.drop_duplicates(inplace=True)
@@ -118,30 +118,28 @@ class CreateDB:
 
         # 重複削除
         jader = pd.merge(
-            self.reac[['識別番号', '有害事象']].drop_duplicates(inplace=True),
+            self.reac[['識別番号', '有害事象']].drop_duplicates(inplace=False),
             outer_drug_demo, on='識別番号', how='outer'
         )
         return jader
 
     def get_se(self):
         """tnfαを飲んだ人の有害事象の集計データの保存"""
-        jader = pd.read_csv('target/data.csv', encoding='shift-jis')
-        jader[jader.is_tnf == 1].groupby('有害事象').sum().sort_values('is_tnf', ascending=False)[
-            'is_tnf']
-        return jader
-
-
-with codecs.open('jader/drug202008.csv', "r", "Shift-JIS", "ignore") as file:
-    drug = pd.read_table(file, delimiter=",")
-
-with codecs.open('jader/demo202008.csv', "r", "Shift-JIS", "ignore") as file:
-    demo = pd.read_table(file, delimiter=",")
-
-with codecs.open('jader/reac202008.csv', "r", "Shift-JIS", "ignore") as file:
-    reac = pd.read_table(file, delimiter=",")
+        jader = pd.read_csv('target/data.csv', encoding='shift_jis')
+        groupby_jader = jader[jader.is_tnf == 1].groupby('有害事象')
+        return groupby_jader.sum().sort_values('is_tnf', ascending=False)['is_tnf']
 
 
 def main():
+    with codecs.open('jader/drug202008.csv', "r", "Shift-JIS", "ignore") as file:
+        drug = pd.read_table(file, delimiter=",")
+
+    with codecs.open('jader/demo202008.csv', "r", "Shift-JIS", "ignore") as file:
+        demo = pd.read_table(file, delimiter=",")
+
+    with codecs.open('jader/reac202008.csv', "r", "Shift-JIS", "ignore") as file:
+        reac = pd.read_table(file, delimiter=",")
+
     c = CreateDB(drug, demo, reac)
     sus_drug = keep_columns(
         c.extract_suspicious(),
@@ -150,11 +148,11 @@ def main():
     tnfa_drug_dict = c.get_tnfa_drug()
     checked_drug = c.check_tnfa(sus_drug, tnfa_drug_dict)
     c.groupby_tnfa(checked_drug).to_csv(
-        'target/tnf_druger.csv', encoding='shift-jis'
+        'target/tnf_druger.csv', encoding='shift_jis'
     )
     jader = c.join_tnfa_and_demo_reac()
-    jader.to_csv('target/data.csv', encoding='shift-jis')
-    c.get_se().to_csv('target/count_side_effect.csv', encoding='shift-jis')
+    jader.to_csv('target/data.csv', encoding='shift_jis')
+    c.get_se().to_csv('target/count_side_effect.csv', encoding='shift_jis')
 
 
 if __name__ == "__main__":
