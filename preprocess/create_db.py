@@ -29,7 +29,7 @@ def one_to_many_dict(ls: list) -> dict:
 
 
 # 解析用のデータベースの作成
-class CreateDB:
+class Jader:
     def __init__(self, drug: 'DataFrame', demo: 'DataFrame', reac: 'DataFrame'):
         """JADERのオリジナルデータ"""
         self.drug = drug
@@ -140,19 +140,19 @@ def main():
     with codecs.open('jader/reac202008.csv', "r", "Shift-JIS", "ignore") as file:
         reac = pd.read_table(file, delimiter=",")
 
-    c = CreateDB(drug, demo, reac)
+    j = Jader(drug, demo, reac)
     sus_drug = keep_columns(
-        c.extract_suspicious(),
+        j.extract_suspicious(),
         ['識別番号', '医薬品連番', '医薬品（一般名）', '使用理由']
     )
-    tnfa_drug_dict = c.get_tnfa_drug()
-    checked_drug = c.check_tnfa(sus_drug, tnfa_drug_dict)
-    c.groupby_tnfa(checked_drug).to_csv(
+    tnfa_drug_dict = j.get_tnfa_drug()
+    checked_drug = j.check_tnfa(sus_drug, tnfa_drug_dict)
+    j.groupby_tnfa(checked_drug).to_csv(
         'target/tnf_druger.csv', encoding='shift_jis'
     )
-    jader = c.join_tnfa_and_demo_reac()
+    jader = j.join_tnfa_and_demo_reac()
     jader.to_csv('target/data.csv', encoding='shift_jis')
-    c.get_se().to_csv('target/count_side_effect.csv', encoding='shift_jis')
+    j.get_se().to_csv('target/count_side_effect.csv', encoding='shift_jis')
 
 
 if __name__ == "__main__":
