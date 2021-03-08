@@ -7,7 +7,7 @@ import config
 
 
 class ROR:
-    def __init__(self, jader=pd.read_csv('target/data.csv', encoding='shift-jis')):
+    def __init__(self, jader=pd.read_csv('target/data.csv', encoding='shift_jis')):
         self.jader = jader
 
     def create_ror_file(self):
