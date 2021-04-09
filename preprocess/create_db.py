@@ -38,7 +38,7 @@ class Jader:
 
     def extract_suspicious(self) -> "DataFrame":
         """被疑薬のみの抽出"""
-        return self.drug[drug["医薬品の関与"] == "被疑薬"]
+        return self.drug[self.drug["医薬品の関与"] == "被疑薬"]
 
     def get_tnfa_drug(self) -> dict:
         with open('master/tnfa_drug202008.csv', newline='') as f:
@@ -80,8 +80,7 @@ class Jader:
         df = drop_columns(df, ['医薬品連番', '医薬品（一般名）', '使用理由'])
 
         # 重複削除し、FalseとTrueを0と1に置き換え
-        df = df.drop_duplicates().replace(False, 0).replace(True, 1)
-        return df
+        return df.drop_duplicates()*1
 
     def groupby_tnfa(self, sus_drug: 'DataFrame') -> 'DataFrame':
         """TNF-α阻害薬を服用した患者を1人1レコードへ変換"""
